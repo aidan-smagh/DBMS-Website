@@ -31,6 +31,31 @@ def filtered():
     
     developer = request.args['developer']
     rating = request.args['rating']
+    if developer == 'all' and rating != 'all':
+        cursor = conn.execute("""SELECT games.title, games.rating,
+            games.avgLength, games.releaseDate, games.developer,
+            developers.headquartersCity FROM games JOIN developers ON
+            games.developer = developers.name WHERE games.rating = ?
+            limit 10""", (rating,))
+        filteredTable = cursor.fetchall()
+        return render_template("filtered.html", data = filteredTable) 
+    
+    elif developer != 'all' and rating == 'all':
+        cursor = conn.execute("""select games.title, games.rating, 
+                games.avgLength, games.releaseDate, games.developer, 
+                developers.headquartersCity from games join developers on 
+                games.developer = developers.name where games.developer = ?
+                limit 10""", (developer,))
+        filteredTable = cursor.fetchall()
+        return render_template("filtered.html", data = filteredTable) 
+    
+    elif developer == 'all' and rating == 'all':
+        cursor = conn.execute("""select games.title, games.rating,
+           games.avgLength, games.releaseDate, games.developer,
+           developers.headquartersCity from games join developers on
+           games.developer = developers.name limit 10""")
+        filteredTable = cursor.fetchall()
+        return render_template("filtered.html", data = filteredTable)
     cursor = conn.execute("""SELECT games.title, games.rating,
            games.avgLength, games.releaseDate, games.developer,
            developers.headquartersCity FROM games JOIN developers ON
