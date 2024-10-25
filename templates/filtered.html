@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+    <TITLE>Video Game Database</TITLE>
+</HEAD>
+<BODY bgcolor = CadetBlue>
+<H1 align="center"> Video Game Database </H1>
+
+<H1> Video Games </H1>
+<TABLE align="center", border = 2 cellpadding = 2 cellspacing = 5>
+    <tr><th>Title</th><th>Rating</th><th>Avg Length</th>
+    <th>Release Date</th><th>Developer</th><th>Headquarters</th></tr>
+
+    {% for game in data %}
+        <tr>
+            <td>{{ game[0] }}</td>
+            <td>{{ game[1] }}</td>
+            <td>{{ game[2] }}</td>
+            <td>{{ game[3] }}</td>
+            <td>{{ game[4] }}</td>
+            <td>{{ game[5] }}</td>
+        <tr>
+    {% endfor %}
+</TABLE>
+ 
+<form align = "center" method="get" action="http://cpsc.umw.edu:35057/filtered">
+ 
+     <label for="developer">Developer:</label>
+     <select name = "developer">
+         <option value="all">all</option>
+         {% for developer in data %}
+             <option value ="{{ developer[5] }}">{{ developer[5] }}</option>
+         {% endfor %}
+     </select>
+ 
+     <label for="rating">Rating:</label>
+     <select name = "rating">
+         <option value="all">all</option>
+         {% for rating in data %}
+             <option value="{{ rating[1] }}">{{ rating[1] }}</option>
+         {% endfor %}
+     </select>
+ 
+     <input type = "submit" name = "submit" value = "Filter" />
+
+</form>
+</BODY>
+</HTML>

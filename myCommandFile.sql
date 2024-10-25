@@ -7,16 +7,32 @@ CREATE TABLE games (
         avgLength int,
         developer text,
         releaseDate text,
-        primary key(title)
-        unique (title, releaseDate)
+        PRIMARY KEY (title, releaseDate)
+        FOREIGN KEY (developer) REFERENCES developers(name)
 );
 
 CREATE TABLE developers (
         name text,
         foundingYear text,
         headquartersCity text,
-        primary key(name)
+        PRIMARY KEY(name)
 );
+
+INSERT INTO developers (name, foundingYear, headquartersCity) VALUES
+        ('Atlus', '1986', 'Tokyo'),
+        ('Naughty Dog', '1984', 'Santa Monica'),
+        ('Square Enix', '2003', 'Tokyo'),
+        ('Fromsoft', '1986', 'Tokyo'),
+        ('BlueTwelve', '2016', 'Montpellier'),
+        ('Capcom', '1979', 'Osaka'),
+        ('Rockstar Games', '1998', 'New York'),
+        ('Sucker Punch', '1997', 'Bellevue'),
+        ('3D Realms', '1987', 'Garland'),
+        ('The Creative Assembly', '1987', 'Horsham'),
+        ('Id Software', '1991', 'Richardson'),
+        ('HAL Laboratory', '1980', 'Tokyo'),
+        ('Game Freak', '1989', 'Tokyo'),
+        ('Santa Monica Studio', '1999', 'Santa Monica');
 
 INSERT INTO games (title, rating, avgLength, developer, releaseDate) VALUES
         ('Persona 5', 'M', 100, 'Atlus', '2016-09-16'),
@@ -43,18 +59,3 @@ INSERT INTO games (title, rating, avgLength, developer, releaseDate) VALUES
         ('God of War', 'M', 33, 'Santa Monica Studio', '2018-04-20');
 
 
-INSERT INTO developers (name, foundingYear, headquartersCity) VALUES
-        ('Atlus', '1986', 'Tokyo'),
-        ('Naughty Dog', '1984', 'Santa Monica'),
-        ('Square Enix', '2003', 'Tokyo'),
-        ('Fromsoft', '1986', 'Tokyo'),
-        ('BlueTwelve', '2016', 'Montpellier'),
-        ('Capcom', '1979', 'Osaka'),
-        ('Rockstar Games', '1998', 'New York'),
-        ('Sucker Punch', '1997', 'Bellevue'),
-        ('3D Realms', '1987', 'Garland'),
-        ('The Creative Assembly', '1987', 'Horsham'),
-        ('Id Software', '1991', 'Richardson'),
-        ('HAL Laboratory', '1980', 'Tokyo'),
-        ('Game Freak', '1989', 'Tokyo'),
-        ('Santa Monica Studio', '1999', 'Santa Monica');
