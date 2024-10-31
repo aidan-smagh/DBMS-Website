@@ -74,10 +74,17 @@ def adding():
     conn = sqlite3.connect("asmagh_games.db")
 
     title=request.args['title']
+    if title == "":
+        return "<HTML><BODY>Enter a valid game</BODY><HTML>"
+        
+
     rating=request.args['rating']
     avgLength=request.args['length']
     developer=request.args['developer']
     releaseDate=request.args['releaseDate']
+    if releaseDate =="":
+        return "<HTML><BODY>Enter a valid game</BODY><HTML>"
+    
     headquarters=request.args['headquarters']
 
     try:
