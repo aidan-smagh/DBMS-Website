@@ -1,6 +1,6 @@
 from dbtour import dbtour_app
 import sqlite3
-from flask import render_template, request
+from flask import render_template, request, url_for
 
 
 @dbtour_app.route("/")
@@ -11,12 +11,12 @@ def homePage():
     cursor = conn.execute("""SELECT games.title, games.rating, 
     games.avgLength, games.releaseDate, games.developer,
     developers.headquartersCity FROM games JOIN developers ON 
-    games.developer = developers.name limit 10""")
+    games.developer = developers.name order by games.ROWID desc limit 10""")
     gameData = cursor.fetchall();
     
     #grab the developers    
     cursor = conn.execute("""SELECT DISTINCT developer from games join
-    developers on games.developer = developers.name limit 10""")
+    developers on games.developer = developers.name""")
     developers = cursor.fetchall()
 
     #grab the ratings
@@ -64,3 +64,40 @@ def filtered():
     filteredTable = cursor.fetchall()
 
     return render_template("filtered.html", data = filteredTable)
+
+@dbtour_app.route("/addData")
+def addData():
+    return render_template("addData.html")
+
+@dbtour_app.route("/adding")
+def adding():
+    conn = sqlite3.connect("asmagh_games.db")
+
+    title=request.args['title']
+    rating=request.args['rating']
+    avgLength=request.args['length']
+    developer=request.args['developer']
+    releaseDate=request.args['releaseDate']
+    headquarters=request.args['headquarters']
+
+    try:
+        cursor = conn.execute("""insert into games (title, rating, avgLength
+        , developer, releaseDate) values (?, ?, ?, ?, ?)""", (title, rating,
+         avgLength, developer, releaseDate))
+    except sqlite3.IntegrityError as e:
+        return "<HTML><BODY>Please try again</BODY></HTML>"
+    
+    cursor = conn.execute("select distinct name from developers")
+    check = cursor.fetchall()
+    
+    for developers in check:
+        if developer == developers[0]:
+            conn.commit()
+            return homePage()
+    try:
+        cursor = conn.execute("""insert into developers (name, foundingYear,
+        headquartersCity) values (?, null, ?)""", (developer, headquarters))
+    except sqlite3.IntegrityError as e:
+        return "<HTML><BODY>Please try again developers</BODY></HTML>"
+    conn.commit() 
+    return homePage()
