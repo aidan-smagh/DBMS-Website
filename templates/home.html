@@ -22,7 +22,7 @@
     {% endfor %}
 </TABLE>
 
-<form align = "center" method="get" action="http://cpsc.umw.edu:35057/filtered">
+<form align = "center" method="get" action="http://cpsc.umw.edu:35056/filtered">
     
     <label for="developer">Developer:</label>
     <select name = "developer">
@@ -43,9 +43,55 @@
     <input type = "submit" name = "submit" value = "Filter" />
 </form>
     
-<p align="center"><a href="http://cpsc.umw.edu:35057/addData">Add Data</a>
+<p align="center"><a href="http://cpsc.umw.edu:35056/addData">Add Data</a>
 </p>
+
+<hr/>
+<br>
+ 
+<H1>Queue</H1>
+ 
+<TABLE align="center" border = 2 cellpadding = 2 cellspacing = 3>
+    <tr><th>Pos</th><th>Video Game</th></tr>
+        <tr>
+            <td>1</td>
+            <td>{{ queue[0] }}</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>{{ queue[1] }}</td>
+         </tr>
+         <tr>
+            <td>3</td>
+            <td>{{ queue[2] }}</td>
+         </tr>
+</TABLE>
+ 
+<br>
+ 
+<form align="center" method="get" action="http://cpsc.umw.edu:35056/addToQueue">
+     
+    <label for="game">Game to queue:</label>
+        <select name = "game">
+            {% for game in allGames %}
+                <option value="{{ game[0] }}">{{ game[0] }}</option>
+            {% endfor %}
+ 
+        </select>
+    <input type="submit" name="submit" value="Submit" />
+ 
+</form>
+<form align="center" method="get" action="http://cpsc.umw.edu:35056/removeFromQueue">
+     
+    <label for="game">Remove from queue:</label>
+        <select name="game">
+            <option value="{{ queue[0] }}">{{ queue[0] }}</option>
+            <option value="{{ queue[1] }}">{{ queue[1] }}</option> 
+            <option value="{{ queue[2] }}">{{ queue[2] }}</option>
+        </select>
+    <input type="submit" name="submit" value="Submit"/>
 
 </BODY>
 </HTML>
+
 
