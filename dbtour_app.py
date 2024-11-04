@@ -1,1 +1,1 @@
-from dbtour import dbtour_app
+from dbtour_dev import dbtour_app

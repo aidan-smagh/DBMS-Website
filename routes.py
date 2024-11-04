@@ -1,12 +1,14 @@
-from dbtour import dbtour_app
+from dbtour_dev import dbtour_app
 import sqlite3
 from flask import render_template, request, url_for
+import redis
 
 
 @dbtour_app.route("/")
 def homePage():
     conn = sqlite3.connect("asmagh_games.db")
-    
+    r = redis.Redis(db=30, password="BenAndJerrys", decode_responses=True)
+
     #join the two tables together
     cursor = conn.execute("""SELECT games.title, games.rating, 
     games.avgLength, games.releaseDate, games.developer,
@@ -23,7 +25,16 @@ def homePage():
     cursor = conn.execute("""SELECT DISTINCT rating from games""")
     ratings = cursor.fetchall()
 
-    return render_template("home.html", gameData = gameData, developers = developers, ratings = ratings) 
+    #select all games from the table
+    cursor = conn.execute("select title from games")
+    allGames = cursor.fetchall()
+    
+    queue = r.lrange("queue:games", 0, -1)
+
+    #get games and the scores
+    ranked = r.zrevrange("scores:games", 0, -1, withscores=True)
+
+    return render_template("home.html", gameData = gameData, developers = developers, ratings = ratings, queue = queue, allGames = allGames, ranked=ranked) 
 
 @dbtour_app.route("/filtered")
 def filtered():
@@ -106,5 +117,58 @@ def adding():
         headquartersCity) values (?, null, ?)""", (developer, headquarters))
     except sqlite3.IntegrityError as e:
         return "<HTML><BODY>Please try again developers</BODY></HTML>"
+    
+    #commit    
     conn.commit() 
+    return homePage()
+
+@dbtour_app.route("/addToQueue")
+def addToQueue():
+     r = redis.Redis(db=30, password="BenAndJerrys", decode_responses=True)
+ 
+     game = request.args['game']
+     queue = r.lrange("queue:games", 0, -1)
+     for games in queue:
+        if game == games:
+            return "<HTML><BODY>Game is already in the queue</BODY></HTML>"
+     
+     listLength = r.llen("queue:games") 
+     if (listLength == 3):
+        r.rpop("queue:games")
+        add = r.rpush("queue:games", game)
+     elif (listLength < 3):
+        add = r.rpush("queue:games", game)    
+      
+     if (listLength > 3): 
+        r.rpop("queue:games")
+     
+
+     return homePage()
+
+
+@dbtour_app.route("/removeFromQueue")
+def removeFromQueue():
+    r = redis.Redis(db=30, password="BenAndJerrys", decode_responses=True)
+ 
+    game = request.args['game']
+    queue = r.lrange("queue:games", 0, -1)
+
+    
+    if game not in queue:        
+        return """<HTML><BODY>Can't remove a game not in the queue
+        </BODY></HTML>"""
+
+    r.lrem("queue:games", 1, game)
+
+            
+    return homePage()
+
+@dbtour_app.route("/addScore")
+def addScore():
+    r = redis.Redis(db=30, password="BenAndJerrys", decode_responses=True)
+    
+    game = request.args['game']
+    score = float(request.args['score'])
+    
+    r.zadd("scores:games", {game: score})
     return homePage()
